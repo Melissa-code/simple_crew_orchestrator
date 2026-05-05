@@ -100,5 +100,36 @@ LM studio doit tourner avec l'API en arriere plan
 - **MyCrewDemo.js**: le chef d'orchestre qui crée les agents et lance les tâches
 
 
+## 6. Exemples d'outils 
 
+### 6.1. Générer un QRCode coloré avec l'adresse URL d'un site 
+
+- Créer un agent capable de générer un QR code bleu pour le site du CNES
+
+*   **API utilisée pour générer QR code** : [QR Server API](https://goqr.me/api/)
+*   **Paramètre spécifique** : `&color=0-0-255` (Bleu)
+
+
+### 6.2. Traducteur français - anglais 
+
+- Créer un agent capable de lire un fichier en français puis de le traduire en anglais et enfin l'enregistrer dans un fichier
+
+*   **API utilisée pour traduction** : [MyMemory](https://mymemory.translated.net/doc/spec.php) 
+*   **TRANSLATE_API_KEY** : pour échange sécurisé avec l'API `TRANSLATE_API_KEY=user@yourdomain.com`
+
+MyMemory fonctionne sur un système d'identification par email pour augmenter ton quota gratuit (environ 10 000 mots par jour).
+Nul besoin de copier une clé API, ajouter son email dans l'URL de la requête avec le paramètre `de=`
+
+<img style="width: 800px;" src="./assets/img/cnes_translate.png">
+
+## 7. Pipeline faire travailler les agents en équipe
+
+Le projet permet de chaîner les tâches
+
+```
+// flux automatisé
+[Agent Chercheur] --(données météo)--> [Agent Rédacteur] --(article)--> [Outil Fichier]
+```
+
+- Exécuter `node MyCrewDemo.js`
 
