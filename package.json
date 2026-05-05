@@ -1,0 +1,11 @@
+{
+  "name": "simple_crew_orchestrator",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "node-fetch": "^3.3.2"
+  }
+}
