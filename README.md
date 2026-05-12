@@ -120,16 +120,56 @@ LM studio doit tourner avec l'API en arriere plan
 MyMemory fonctionne sur un système d'identification par email pour augmenter ton quota gratuit (environ 10 000 mots par jour).
 Nul besoin de copier une clé API, ajouter son email dans l'URL de la requête avec le paramètre `de=`
 
+-> Exécuter `node MyCrewDemo.js`, `node examples/weatherCrew.js`
+
+
 <img style="width: 800px;" src="./assets/img/cnes_translate.png">
 
-## 7. Pipeline faire travailler les agents en équipe
 
-Le projet permet de chaîner les tâches
+### 6.3. Application météo multi-agents
 
-```
-// flux automatisé
-[Agent Chercheur] --(données météo)--> [Agent Rédacteur] --(article)--> [Outil Fichier]
-```
+Ce cas d'usage démontre la capacité d'orchestration entre un agent spécialisé en outils (Tools) et un agent spécialisé en analyse (LLM).
 
-- Exécuter `node MyCrewDemo.js`, `node examples/weatherCrew.js`
+**Fonctionnement de l'équipe**
+
+1. WeatherFetcher (Agent 1) : interroge l'API météo et extrait les données comme température, humidité, conditions
+
+2. WeatherAnalyst (Agent 2) : récupère le résultat du premier agent pour rédiger une analyse contextuelle et des conseils pratiques via LM Studio
+
+**Configuration requise**
+
+- source de données : [WeatherAPI](https://www.weatherapi.com/)
+- variables d'environnement (.env) `WEATHER_API_KEY=****** : Clé secrète pour l'accès aux données météo` (Créer un compte gratuit)
+
+#### 6.3.1. L'Outil : weatherTool
+
+L'outil est défini comme une instance de la classe Tool. 
+Il agit comme une interface entre le code et l'API externe.
+
+- Fonction : effectue une requête HTTP fetch vers WeatherAPI
+- Formatage : ne renvoie pas tout le JSON brut (trop lourd pour l'IA), mais une chaîne de caractères optimisée (nom, température, conditions, humidité)
+- Sécurité : utilise WEATHER_API_KEY stockée dans le .env
+
+#### 6.3.2. L'Équipage : weatherCrew
+
+Le fichier example/weatherCrew.js définit la logique de collaboration :
+
+- WeatherFetcher : agent équipé du weatherTool. Sa mission est de transformer une ville (input) en données techniques
+
+- WeatherAnalyst : agent utilisant LM Studio. Il ne possède pas d'outil mais reçoit les données du premier agent pour rédiger des conseils
+
+#### 6.3.3. Flux de données (Data Pipeline)
+
+L'orchestration est gérée par la classe Crew qui assure le transfert du lastResult :
+`Outil Météo ➔ Données Brutes ➔ Input Agent IA ➔ Conseils Finalisés`
+
+=> **Lancement** à la racine `node example/weatherCrew.js`
+
+<img style="width: 800px;" src="./assets/img/meteo1.png">
+<img style="width: 800px;" src="./assets/img/meteo2.png">
+
+
+
+
+
 

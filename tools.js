@@ -109,11 +109,11 @@ const translateToEnglishTool = new Tool('translateToEnglish', async (text) => {
 const weatherTool = new Tool('weather', async (city) => {
     // console.log(`Outil météo appelé pour la localisation: ${city}`);
     const url = `http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city)}`;
-    // console.log(`URL de l'API météo: ${url}`);
+    console.log(`URL de l'API météo: ${url}`);
 
     const response = await fetch(url);
     const data = await response.json();
-    // console.log(`Données météo pour ${city}:`, JSON.stringify(data, null, 2));
+    console.log(`Données météo pour ${city}:`, JSON.stringify(data, null, 2));
 
     if (!data) {
         const errorMsg = `Erreur lors de la récupération des données météo pour ${city}: ${data.message || 'Unknown error'}`;

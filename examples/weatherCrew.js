@@ -11,11 +11,7 @@ const weatherFetcher = new Agent('WeatherFetcher', [weatherTool]);
 const weatherAnalyst = new Agent(
     'WeatherAnalyst', 
     [lmStudioTool], 
-    `Tu es un expert météorologue strict. 
-    IMPORTANT : Utilise EXCLUSIVEMENT les données météo fournies dans le message. 
-    Ne cherche pas à deviner la date ou la température. 
-    Si les données indiquent 14.8°C le 12 mai 2026, utilise ces chiffres exacts.
-    Sois concis, clair et donne des conseils vestimentaires adaptés.`
+    `Tu es un expert météorologue. Analyse strictement les données météo pour la ville donnée ${CITY} le 12 mai 2026. Donne trois conseils pratiques comme comment s'habiller, prendre parapluie, etc... en fonction de la météo. Sois concis et clair.`
 );
 // tasks 
 const tasks = [
@@ -46,7 +42,8 @@ class Crew {
             console.log(`\n[CREW] Tâche ${i + 1}/${tasks.length} (${percent}%) - Agent: ${agent.name}, Outil: ${toolName}`);
             
             if (toolName === 'lmStudio' && lastResult) {
-                tasks[i].input = `${tasks[i].input}\n\nDonnées météo: ${lastResult}`;
+                tasks[i].input = `Voici les données météo réelles à analyser : ${lastResult}. 
+                                Ignore tes propres connaissances de date, utilise uniquement celles-ci.`;
             }
 
             lastResult = await agent.perform(tasks[i], (progress) => {
