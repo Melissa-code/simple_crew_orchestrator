@@ -131,5 +131,5 @@ Le projet permet de chaîner les tâches
 [Agent Chercheur] --(données météo)--> [Agent Rédacteur] --(article)--> [Outil Fichier]
 ```
 
-- Exécuter `node MyCrewDemo.js`
+- Exécuter `node MyCrewDemo.js`, `node examples/weatherCrew.js`
 

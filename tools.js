@@ -50,7 +50,7 @@ const lmStudioTool = new Tool('lmStudio', async (input, systemPrompt=null) => {
 
 /**
  * Outil pour effectuer une requête HTTP GET à une URL donnée 
- * et retourner le contenu texte de la page
+ * retourne le contenu texte de la page
  */
 const fetchTool = new Tool('fetch', async (url) => {
     console.log(`Outil fetch appelé avec l'URL: ${url}`);
@@ -68,7 +68,8 @@ const fetchTool = new Tool('fetch', async (url) => {
 });
 
 /**
- * Outil pour écrire du contenu dans un fichier local: l'agent peut spécifier le nom du fichier et le contenu à écrire
+ * Outil pour écrire du contenu dans un fichier local
+ * l'agent peut spécifier le nom du fichier et le contenu à écrire
  */
 const fileWriteTool = new Tool('fileWrite', async ({ fileName, content }) => {
     console.log(`Fichier écrit: ${fileName}`); 
@@ -85,8 +86,7 @@ const fileWriteTool = new Tool('fileWrite', async ({ fileName, content }) => {
  return l'URL du QR code généré pour que l'agent puisse l'utiliser (le télécharger, l'afficher...)
 */
 const generateQRCodeTool = new Tool('generateQRCode', async (text_url) => {
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=00f&data=${encodeURIComponent(text_url)}`;
-    return url; 
+    return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=00f&data=${encodeURIComponent(text_url)}`; 
 });
 
 /**
@@ -107,21 +107,22 @@ const translateToEnglishTool = new Tool('translateToEnglish', async (text) => {
  * L'agent fournit une localisation (ex: "Paris") et l'outil retourne les conditions météo actuelles 
  */
 const weatherTool = new Tool('weather', async (city) => {
-    console.log(`Outil météo appelé pour la localisation: ${city}`);
+    // console.log(`Outil météo appelé pour la localisation: ${city}`);
     const url = `http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city)}`;
-    console.log(`URL de l'API météo: ${url}`);
+    // console.log(`URL de l'API météo: ${url}`);
 
     const response = await fetch(url);
     const data = await response.json();
-    console.log(`Données météo pour ${city}:`, JSON.stringify(data, null, 2));
+    // console.log(`Données météo pour ${city}:`, JSON.stringify(data, null, 2));
 
-    if (data.error || data.cod !== 200) {
+    if (!data) {
         const errorMsg = `Erreur lors de la récupération des données météo pour ${city}: ${data.message || 'Unknown error'}`;
-        console.error(errorMsg);
+        // console.error(errorMsg);
         return errorMsg;
     }
     
-    // https://www.weatherapi.com/api-explorer.aspx (test dans l'application pour voir la structure de la réponse et les données disponibles)
+    // https://www.weatherapi.com/api-explorer.aspx (créer un compte gratuit)
+    // test dans l'application pour voir la structure de la réponse et les données disponibles
     return `${city}: ${data.location.name}, Température: ${data.current.temp_c}°C, Condition: ${data.current.condition.text}, Température ressentie: ${data.current.feelslike_c}°C, 'Humidité: ${data.current.humidity}`;
 });
 

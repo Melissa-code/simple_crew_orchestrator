@@ -56,8 +56,7 @@ class Agent {
 
         try {
             // exécuter l'outil (API ne repond pas pour code robuste qui ne crash pas)
-            const result = await tool.execute(task.input);
-            return result;
+            return await tool.execute(task.input);
         } catch (error) {
             if (onProgress) {
                 onProgress({
