@@ -106,24 +106,23 @@ const translateToEnglishTool = new Tool('translateToEnglish', async (text) => {
  * Outil pour récupérer les données météo d'une localisation donnée en utilisant l'API 
  * L'agent fournit une localisation (ex: "Paris") et l'outil retourne les conditions météo actuelles 
  */
-const weatherTool = new Tool('weather', async (location) => {
-    console.log(`Outil météo appelé pour la localisation: ${location}`);
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&appid=${WEATHER_API_KEY}&units=metric`;
+const weatherTool = new Tool('weather', async (city) => {
+    console.log(`Outil météo appelé pour la localisation: ${city}`);
+    const url = `http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city)}`;
     console.log(`URL de l'API météo: ${url}`);
+
     const response = await fetch(url);
     const data = await response.json();
-    console.log(`Données météo pour ${location}:`, JSON.stringify(data));
+    console.log(`Données météo pour ${city}:`, JSON.stringify(data, null, 2));
 
     if (data.error || data.cod !== 200) {
-        const errorMsg = `Erreur lors de la récupération des données météo pour ${location}: ${data.message || 'Unknown error'}`;
+        const errorMsg = `Erreur lors de la récupération des données météo pour ${city}: ${data.message || 'Unknown error'}`;
         console.error(errorMsg);
-        throw new Error(errorMsg);
         return errorMsg;
     }
     
-    const result = `${location}: ${data.weather[0].description}, Température: ${data.main.temp}°C, Humidité: ${data.main.humidity}%`;
-
-    return result;
+    // https://www.weatherapi.com/api-explorer.aspx (test dans l'application pour voir la structure de la réponse et les données disponibles)
+    return `${city}: ${data.location.name}, Température: ${data.current.temp_c}°C, Condition: ${data.current.condition.text}, Température ressentie: ${data.current.feelslike_c}°C, 'Humidité: ${data.current.humidity}`;
 });
 
 
