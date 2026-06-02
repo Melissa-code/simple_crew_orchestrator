@@ -1,6 +1,8 @@
+// ============================================================================
 // comment utiliser l'outil pour créer équipe d'agents IA 
 // processus qui lie les agents entre eux et avec les outils pour accomplir des tâches complexes
-// exemple: créer une équipe d'agents pour organiser un voyage (recherche de destinations, réservation de vols, etc)
+// créer une équipe d'agents pour organiser un voyage (recherche de destinations, réservation de vols, etc)
+// ============================================================================
 
 import { Tool, Agent, Task  } from './core.js';
 import { lmStudioTool, fetchTool, fileWriteTool, generateQRCodeTool, translateToEnglishTool, weatherTool } from './tools.js';
@@ -75,7 +77,7 @@ class Crew {
             const percent = Math.round(((counter+1) / tasks.length) * 100);
             console.log(`Etape ${counter + 1}/${tasks.length} (${percent}%) - Agent ${agent.name} exécute la tâche: ${task.description}`);
         
-            // injecte instruction + resultat pour LM studio 
+            // injecte instruction + resultat pour LM studio (agent 2,3,4)
             if (toolName === 'lmStudio' && counter > 0 && lastResult) {
                 const truncatedResult = typeof lastResult === 'string' ? lastResult.substring(0, 5000) : lastResult;
                 task.input = `${task.input}\n\nRésultat précédent:\n${truncatedResult}`;

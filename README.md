@@ -18,6 +18,7 @@ Ce projet s'inspire de concepts comme CrewAI (Python) ou n8n mais implémenté d
 - **Approche équipe de CrewAI**: faire collaborer plusieurs agents en ligne de commande (CLI)
 - **Approche flux de n8n** : automatiser des actions logiques avec une interface graphique
 
+---
 
 ## 2. Objectif du projet
 
@@ -28,6 +29,7 @@ Créer une équipe d'agents capables de travailler à la chaîne, par exemple :
 
 Ce projet propose d'abord une version Console (CLI) puis une version Interface Graphique (GUI) via Express.
 
+---
 
 ## 3. Configuration Technique
 
@@ -54,6 +56,7 @@ npm i node-fetch (récup data de l'API)
 - Exécuter `npm install`
 - Créer un fichier `.env` à la racine du projet
 
+---
 
 ## 4. Configuration de l'IA (LM Studio)
 
@@ -84,6 +87,7 @@ LM_MODEL=meta-llama-3.1-8b-instruct
 En dessous: routes qui nous interesse: `POST/v1/chat/completions`
 LM studio doit tourner avec l'API en arriere plan 
 
+---
 
 ## 5. Architecture du projet 
 
@@ -99,6 +103,7 @@ LM studio doit tourner avec l'API en arriere plan
 - **tools.js**: les outils disponibles
 - **MyCrewDemo.js**: le chef d'orchestre qui crée les agents et lance les tâches
 
+---
 
 ## 6. Exemples d'outils 
 
@@ -125,10 +130,14 @@ Nul besoin de copier une clé API, ajouter son email dans l'URL de la requête a
 
 <img style="width: 800px;" src="./assets/img/cnes_translate.png">
 
+---
 
-### 6.3. Application météo multi-agents
+## 7. Cas Pratiques : Orchestration Multi-Agents (Crews)
 
-Ce cas d'usage démontre la capacité d'orchestration entre un agent spécialisé en outils (Tools) et un agent spécialisé en analyse (LLM).
+### 7.1. Application météo multi-agents
+
+Ce cas d'usage démontre la capacité d'orchestration entre un agent spécialisé 
+en outils (Tools) et un agent spécialisé en analyse (LLM)
 
 **Fonctionnement de l'équipe**
 
@@ -141,7 +150,7 @@ Ce cas d'usage démontre la capacité d'orchestration entre un agent spécialis�
 - source de données : [WeatherAPI](https://www.weatherapi.com/)
 - variables d'environnement (.env) `WEATHER_API_KEY=****** : Clé secrète pour l'accès aux données météo` (Créer un compte gratuit)
 
-#### 6.3.1. L'Outil : weatherTool
+#### L'Outil : weatherTool
 
 L'outil est défini comme une instance de la classe Tool. 
 Il agit comme une interface entre le code et l'API externe.
@@ -150,7 +159,7 @@ Il agit comme une interface entre le code et l'API externe.
 - Formatage : ne renvoie pas tout le JSON brut (trop lourd pour l'IA), mais une chaîne de caractères optimisée (nom, température, conditions, humidité)
 - Sécurité : utilise WEATHER_API_KEY stockée dans le .env
 
-#### 6.3.2. L'Équipage : weatherCrew
+#### L'Équipage : weatherCrew
 
 Le fichier example/weatherCrew.js définit la logique de collaboration :
 
@@ -158,7 +167,7 @@ Le fichier example/weatherCrew.js définit la logique de collaboration :
 
 - WeatherAnalyst : agent utilisant LM Studio. Il ne possède pas d'outil mais reçoit les données du premier agent pour rédiger des conseils
 
-#### 6.3.3. Flux de données (Data Pipeline)
+#### Flux de données (Data Pipeline)
 
 L'orchestration est gérée par la classe Crew qui assure le transfert du lastResult :
 `Outil Météo ➔ Données Brutes ➔ Input Agent IA ➔ Conseils Finalisés`
@@ -167,6 +176,46 @@ L'orchestration est gérée par la classe Crew qui assure le transfert du lastRe
 
 <img style="width: 800px;" src="./assets/img/meteo1.png">
 <img style="width: 800px;" src="./assets/img/meteo2.png">
+
+---
+
+### 7.2. Recherche web et écriture dans un fichier (`MyCrewdemo.js`)
+
+Equipe de 5 agents collabore pour automatiser une veille économique complète: 
+du scraping internet jusqu'à la création d'un fichier markdown. 
+
+#### Fonctionnement de l'équipe 
+
+1. **Fetcher** (outil: `fetch`) scrape contenu brut de la page web à partir d'un mot-clé,
+2. **Analyst** (outil: `lmStudio`) analyse ce contenu brut pour en faire un résumé,
+3. **Extractor** (outil: `lmStudio`) extrait uniquement les faits et chiffres clés de ce résumé, 
+4. **Writer** (outil: `lmStudio`) rédige un article de blog optimisé SEO en Markdown, 
+5. **Injector** (outil: `fileWrite`) enregistre le texte final dans un fichier local `result.md`.
+
+#### Pipeline de données 
+
+`Web Scraping ➔ Résumé ➔ Faits Clés ➔ Article Markdown ➔ Fichier result.md`
+
+#### Pour exécuter ce cas d'usage run `node ./MyCrewdemo.js`
+
+#### Limite du test : Ce n'est pas le résultat attendu 
+
+Bien que la chaîne technique fonctionne parfaitement sans aucun crash: le fichier `result.md` se génère bien,
+**le contenu de l'article n'est pas celui recherché au départ**. Au lieu d'avoir un article chaud avec les derniers chiffres économiques de 2026,
+l'IA a généré un texte de conseils généraux sur l'économie.
+
+**Pourquoi ce décalage ?**
+
+La Fondation Wikimédia a officiellement **fermé les projets Wikinews le 4 mai 2026**.
+L'URL ciblée (`https://fr.wikinews.org/...`) est donc figée en lecture seule 
+et ne contient plus aucune actualité récente. 
+
+Face à cette page "vide" de news fraîches, le modèle LM Studio a improvisé en 
+écrivant un article méthodologique sur "comment suivre l'économie". C'est une 
+belle preuve d'adaptation de l'IA, mais cela montre qu'il faut changer de 
+source de données (URL) pour obtenir un vrai article d'actualité. 
+
+---
 
 
 

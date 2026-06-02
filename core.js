@@ -1,6 +1,9 @@
-// core.js: fonctionnalités de base du projet (3principales classes), définition d'équipe, agent, tâches.... 
+// ============================================================================
+// core.js: fonctionnalités de base du projet 
+// les 3 principales classes, définition d'équipe, agent, tâches.... 
+// ============================================================================
 
-//***************************************************************************************************************************** */
+//************************************************************************** */
 // Outil exécutable par un agent
 
 class Tool {
@@ -14,7 +17,7 @@ class Tool {
     }
 }
 
-//***************************************************************************************************************************** */
+//************************************************************************** */
 // Agent capable d'exécuter des tâches via des outils
 
 class Agent {
@@ -29,7 +32,8 @@ class Agent {
     }
 
     /**
-     * Exécute une tâche avec l'outil correspondant, gère les erreurs et fournit des mises à jour de progression via onProgress
+     * Exécute une tâche avec l'outil correspondant, 
+     * gère les erreurs et fournit des mises à jour de progression via onProgress
      */
     async perform(task, onProgress = null) {
         const tool = this.findTool(task.toolName);
@@ -70,7 +74,7 @@ class Agent {
     }
 }
 
-//***************************************************************************************************************************** */
+//************************************************************************** */
 // Tâche à confier à un agent
 
 class Task {
