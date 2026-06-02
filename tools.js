@@ -116,9 +116,7 @@ const weatherTool = new Tool('weather', async (city) => {
     console.log(`Données météo pour ${city}:`, JSON.stringify(data, null, 2));
 
     if (!data) {
-        const errorMsg = `Erreur lors de la récupération des données météo pour ${city}: ${data.message || 'Unknown error'}`;
-        // console.error(errorMsg);
-        return errorMsg;
+        return `Erreur lors de la récupération des données météo pour ${city}: ${data.message || 'Unknown error'}`;
     }
     
     // https://www.weatherapi.com/api-explorer.aspx (créer un compte gratuit)
