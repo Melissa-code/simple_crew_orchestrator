@@ -85,5 +85,98 @@ class Task {
     }
 }
 
+//**************************************************************************
+// Equipe d'agents  
 
-export { Tool, Agent, Task };
+class Crew {
+    constructor(agents = []) {
+        this.agents = agents;
+    }
+
+    async run(tasks = [], onProgress = null) {
+        const results = [];
+        let lastResult = null;
+
+        for (let i = 0; i < tasks.length; i++) {
+            const agent = this.agents[i % this.agents.length];
+            const toolName = tasks[i].toolName;
+            const percent = Math.round(((i + 1) / tasks.length) * 100);
+
+            console.log(`Etape ${i + 1}/${tasks.length} (${percent}%) - Agent ${agent.name} exécute la tâche: ${tasks[i].description}`);
+        
+            if (onProgress) {
+                onProgress({
+                    step: i + 1,
+                    total: tasks.length,
+                    percent,
+                    agent: agent.name,
+                    tool: toolName,
+                    type: 'progress',
+                }); 
+
+                onProgress({
+                    type: 'log',
+                    level: 'info',
+                    message: `Exécution de la tâche: ${tasks[i].description}`
+                });
+            }
+
+            // Injection du résultat précédent
+            if (toolName === 'lmStudio' && i > 0 && lastResult) {
+                const resultStr = typeof lastResult === 'string' 
+                ? lastResult 
+                : JSON.stringify(lastResult);
+                tasks[i].input = `${tasks[i].input}\n\nRésultat de la tâche précédente:\n${resultStr}`;
+            } else if (toolName === 'fileWrite' && lastResult) {
+                tasks[i].input.content = typeof lastResult === 'string' 
+                ? lastResult 
+                : JSON.stringify(lastResult);
+            } else if (i > 0 && typeof tasks[i].input === 'object' && lastResult) {
+                tasks[i].input = typeof lastResult === 'string' 
+                ? lastResult 
+                : JSON.stringify(lastResult);
+            }
+
+            // Log input
+            if (onProgress) {
+                const inputStr = typeof tasks[i].input === 'object'
+                    ? JSON.stringify(tasks[i].input)
+                    : tasks[i].input;
+                onProgress({
+                    type: 'log',
+                    level: 'info',
+                    message: `Input de la tâche: ${inputStr.substring(0, 200)}${inputStr.length > 200 ? '...' : ''}`
+                });
+            }
+
+            try {
+                lastResult = await agent.perform(tasks[i], onProgress);
+
+                if (onProgress) {
+                    const resultStr = typeof lastResult === 'object' 
+                    ? JSON.stringify(lastResult) : lastResult;
+                    onProgress({
+                        type: 'log',
+                        level: 'info',
+                        message: `Résultat de la tâche: ${resultStr.substring(0, 200)}${resultStr.length > 200 ? '...' : ''}`
+                    });
+                }
+                results.push(lastResult);
+            } catch (error) {
+                if (onProgress) {
+                    onProgress({
+                        type: 'log',
+                        level: 'error',
+                        message: `Erreur lors de l'exécution: ${error.message}`
+                    });
+                }
+                throw error;
+            }
+        } 
+        
+        return results;
+    }
+}
+
+
+export { Tool, Agent, Task, Crew };

@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import { Tool } from './core.js';
 import fs from 'fs/promises'; //const fs = require('fs').promises; // pour lire/ecrire dans des fichiers
+
 const LM_API_URL = process.env.LM_API_URL;
 const LM_MODEL = process.env.LM_MODEL; 
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY; 
