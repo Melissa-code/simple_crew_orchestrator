@@ -1,1 +1,109 @@
-test
+<!DOCTYPE html>
+<html lang="fr-FR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simple Crew Orchestrator. Créez et gérez vos agents et tâches de manière intuitive avec notre interface visuelle simple. Connectez, configurez et exécutez vos workflows d'IA en toute simplicité.">
+    <link rel="icon" type="image/svg+xml" sizes="32x32" href="/img/agent_ia_white.svg" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Simple Crew Orchestrator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <h1>Simple Crew Orchestrator</h1>
+            <hr style="margin: 20px 0;">
+            <!-- buttons -->
+            <div class="form-group">
+                <button class="btn btn-primary" onclick="createBlock('agent')">
+                    <i class="fa-solid fa-plus"></i>
+                    Ajouter Agent
+                </button>
+                <button class="btn btn-primary" onclick="createBlock('task')">
+                    <i class="fa-solid fa-plus"></i>
+                    Ajouter Tâche
+                </button>
+            </div>
+
+            <hr style="margin: 20px 0;">
+            
+            <div id="properties">
+                <p>Sélectionnez un bloc pour modifier ses propriétés</p>
+            </div>
+        </div>
+        
+        <!-- Main Canvas -->
+        <div class="canvas">
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="executeWorkflow()">
+                    <i class="fa-solid fa-play"></i>
+                    Exécuter
+                </button>
+                <button class="btn btn-secondary" onclick="clearCanvas()">
+                    <i class="fa-solid fa-trash"></i>
+                    Effacer
+                </button>
+                <button class="btn btn-secondary" onclick="saveWorkflow()">
+                    <i class="fa-solid fa-save"></i>
+                    Sauvegarder
+                </button>
+                <button class="btn btn-secondary" onclick="loadWorkflow()">
+                    <i class="fa-solid fa-folder-open"></i>
+                    Charger
+                </button>
+                <button class="btn btn-secondary" onclick="toggleHelp()">
+                    <i class="fa-solid fa-question"></i>
+                    Aide
+                </button>
+            </div>
+            
+            <div class="workspace" id="workspace">
+                <svg id="connections" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Panel -->
+    <div class="help-panel" id="helpPanel">
+        <div class="help-header">
+            <h3>
+                <i class="fa-solid fa-question"></i>
+                Guide d'utilisation
+            </h3>
+            <button onclick="toggleHelp()" class="close-btn">✕</button>
+        </div>
+        <div class="help-content" id="helpContent">
+            <div class="loading">Chargement de la documentation...</div>
+        </div>
+    </div>
+
+    <div class="progress-container" id="progressContainer">
+        <h3>
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Exécution en cours...
+        </h3>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div id="progressText">Initialisation...</div>
+    </div>
+
+    <div class="console collapsed" id="console">
+        <div class="console-header" onclick="toggleConsole()">
+            <span>
+                <i class="fa-solid fa-terminal"></i>
+                Console</span>
+            <span id="consoleToggle">▲</span>
+        </div>
+        <div class="console-content" id="consoleContent"></div>
+    </div>
+
+    <!-- JS -->
+    <script>
+        
+    </script>
+</body>
+</html>
