@@ -8,15 +8,40 @@ let consoleExpanded = false;
 
 /* remplace data par defaut */
 const blockTemplates = {
-    agent: { name: 'Agent ${id}', tools: ['lmStudio'], prompt: 'Tu es un assistant IA utile.' },
-    task: { input: '', toolName: 'lmStudio' }
+    agent: { 
+        name: 'Agent ${id}', 
+        tools: ['lmStudio'], 
+        prompt: 'Tu es un assistant IA utile.' 
+    },
+    task: { 
+        input: '',
+        toolName: 'lmStudio' 
+    }
 };
 
 const toolConfigs = {
-    fetch: { param: 'url', placeholder: 'https://example.com', label: 'URL:' },
-    weather: { param: 'city', placeholder: 'Paris', label: 'Ville:' },
-    writeFile: { param: 'filename', placeholder: 'output.txt', label: 'Nom du fichier:', default: 'output.txt' },
-    lmStudio: { param: 'input', placeholder: 'Votre instruction...', label: 'Prompt/Input:', type: 'textarea' },
+    fetch: { 
+        param: 'url', 
+        placeholder: 'https://example.com', 
+        label: 'URL:' 
+    },
+    weather: { 
+        param: 'city', 
+        placeholder: 'Paris', 
+        label: 'Ville:' 
+    },
+    writeFile: { 
+        param: 'filename', 
+        placeholder: 'output.txt', 
+        label: 'Nom du fichier:', 
+        default: 'output.txt' 
+    },
+    lmStudio: { 
+        param: 'input', 
+        placeholder: 'Votre instruction...', 
+        label: 'Prompt/Input:', 
+        type: 'textarea' 
+    },
 };
 
 
@@ -30,7 +55,14 @@ function createBlock(type, data = null) {
     }
 
     // block avec data
-    const block = { id: blockId, type, data: blockData, x: 100 + (blockCounter * 50), y: 100 + (blockCounter * 50), connections: [] };
+    const block = { 
+        id: blockId, 
+        type, 
+        data: blockData, 
+        x: 100 + (blockCounter * 50), 
+        y: 100 + (blockCounter * 50), 
+        connections: [] 
+    };
     blocks.push(block);
 
     if (!data) {
@@ -62,7 +94,8 @@ function addBlockToWorkspace(block) {
 }
 
 function deleteBlock(blockId) {
-    //
+    blocks = blocks.filter(block => block.id !== blockId); // remove from blocks array
+    document.getElementById(blockId).remove(); // remove from DOM
 }
 
 function selectBlock(blockId) {
