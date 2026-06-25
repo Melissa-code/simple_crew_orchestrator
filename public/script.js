@@ -99,5 +99,27 @@ function deleteBlock(blockId) {
 }
 
 function selectBlock(blockId) {
-    //
+    document.querySelectorAll('.block').forEach(block => block.classList.remove('selected'));
+    document.getElementById(blockId).classList.add('selected');
+}
+
+function makeDraggable(element, block) {
+    let isDragging = false, startX, startY, initialX, initialY;
+
+    element.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.connection-point, button')) return; //don't drag
+
+        isDragging = true;
+        elemennt.style.zIndex = 1000;
+        element.style.transition = 'none';
+        const rect = element.getBoundingClientRect();
+        const workspaceRect = document.getElementById('workspace').getBoundingClientRect();
+
+        // mouse when clicked and  position of the block relative to workspace
+        [startX, startY] = [e.clientX, e.clientY];
+        // calcule distance from workspace top-left to block top-left
+        [initialX, initialY] = [rect.left - workspaceRect.left, rect.top - workspaceRect.top];
+
+        Object.assign(document.body.style, { userSelect: 'none', cursor: 'grabbing' });
+    });
 }

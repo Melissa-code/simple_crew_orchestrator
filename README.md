@@ -201,7 +201,8 @@ du scraping internet jusqu'à la création d'un fichier markdown.
 #### Limite du test : Ce n'est pas le résultat attendu 
 
 Bien que la chaîne technique fonctionne parfaitement sans aucun crash: le fichier `result.md` se génère bien,
-**le contenu de l'article n'est pas celui recherché au départ**. Au lieu d'avoir un article chaud avec les derniers chiffres économiques de 2026,
+**le contenu de l'article n'est pas celui recherché au départ**. 
+Au lieu d'avoir un article chaud avec les derniers chiffres économiques de 2026,
 l'IA a généré un texte de conseils généraux sur l'économie.
 
 **Pourquoi ce décalage ?**
