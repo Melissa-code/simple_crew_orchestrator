@@ -392,3 +392,22 @@ function clearCanvas() {
     }
     console.log("Le canevas a été entièrement vidé et réinitialisé !");
 }
+
+/**
+ * ouvre ou ferme la console de débogage en bas de l'écran
+ */
+function toggleConsole() {
+    const console = document.getElementById('console');
+    const toggle = document.getElementById('consoleToggle');
+    if (!console || !toggle) return;
+
+    if (consoleExpanded) {
+        console.className = 'console collapsed';
+        toggle.textContent = '▲';
+        consoleExpanded = false;
+    } else {
+        console.className = 'console expanded';
+        toggle.textContent = '▼';
+        consoleExpanded = true;
+    }
+}
