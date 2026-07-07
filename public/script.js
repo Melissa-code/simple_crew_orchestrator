@@ -411,3 +411,18 @@ function toggleConsole() {
         consoleExpanded = true;
     }
 }
+
+function logToConsole(type, message) {
+    const content = document.getElementById('consoleContent');
+    const logEntry = document.createElement('div');
+
+    logEntry.className = `log-entry log-${type}`;
+    logEntry.innerHTML = `<span class="log-timestamp">[${new Date().toLocaleTimeString()}]</span>${message}`;
+    content.appendChild(logEntry);
+    content.scrollTop = content.scrollHeight; // auto-scroll to bottom
+}
+
+function clearLogsToConsole() {
+    const content = document.getElementById('consoleContent');
+    content.innerHTML = `<div class="log-entry log-info"><span class="log-timestamp">[${new Date().toLocaleTimeString()}]</span>Console vidée</div>`;
+}
