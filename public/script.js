@@ -190,7 +190,6 @@ function deleteBlock(blockId) {
 function selectBlock(blockId) {
     document.querySelectorAll('.block').forEach(block => block.classList.remove('selected'));
     document.getElementById(blockId).classList.add('selected');
-    console.log(`Bloc sélectionné ! ID: ${blockId}`);
 
     // display properties in the right panel
     showProperties(blockId);
@@ -323,7 +322,6 @@ function startConnection(blockId) {
     connecting = true;
     connectStartBlock = blockId;
     document.body.style.cursor = 'crosshair'; // change cursor to indicate connection mode
-    console.log(`Début de la connexion depuis le bloc ID: ${blockId}`);
 }
 
 function endConnection(blockId) {
@@ -374,4 +372,23 @@ function updateConnections() {
         
         svgCanvas.appendChild(path);
     });
+}
+
+function clearCanvas() {
+    blocks = [];
+    connections = [];
+    blockCounter = 0;
+    selectedBlock = null;
+
+    //clear workspace
+    document.querySelectorAll('.block').forEach(block => block.remove());
+    const svgCanvas = document.getElementById('connections');
+    if (svgCanvas) svgCanvas.innerHTML = '';
+
+    //properties panel 
+    const propertiesPanel = document.getElementById('properties');
+    if (propertiesPanel) {
+        propertiesPanel.innerHTML = '<p>Sélectionnez un bloc pour modifier ses propriétés</p>';
+    }
+    console.log("Le canevas a été entièrement vidé et réinitialisé !");
 }
