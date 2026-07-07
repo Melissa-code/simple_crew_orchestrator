@@ -12,7 +12,7 @@
 ## Étape 4 : le panneau des propriétés [x]
 – Modifier les données d'un bloc en direct
 
-## Étape 5 : le système de liens 
+## Étape 5 : le système de liens [x]
 – Connecter les blocs avec des lignes SVG
 
 ## Étape 6 : l'exécution et sauvegarde 

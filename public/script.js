@@ -98,6 +98,9 @@ function addBlockToWorkspace(block) {
             <div class="block-content">
                 <small></small>
             </div>
+
+            <div class="connection-point output" onclick="startConnection('${id}'); event.stopPropagation();"></div>
+            <div class="connection-point input" onclick="endConnection('${id}'); event.stopPropagation();"></div>
         `
     });
 
@@ -170,7 +173,7 @@ function makeDraggable(element, block) {
         Object.assign(document.body.style, { userSelect: '', cursor: '' });
 
         // update connections
-        
+        updateConnections();
     });
 }
 
@@ -314,4 +317,61 @@ function updateTaskTool(blockId, newTool) {
 
     showProperties(blockId); // refresh properties panel
     updateBlockPreview(blockId); // refresh block preview
+}
+
+function startConnection(blockId) {
+    connecting = true;
+    connectStartBlock = blockId;
+    document.body.style.cursor = 'crosshair'; // change cursor to indicate connection mode
+    console.log(`Début de la connexion depuis le bloc ID: ${blockId}`);
+}
+
+function endConnection(blockId) {
+    if (connecting && connectStartBlock && connectStartBlock !== blockId) {
+        connections.push({ from: connectStartBlock, to: blockId });
+        updateConnections();
+        [connecting, connectStartBlock] = [false, null];
+    }
+}
+
+function updateConnections() {
+   const svgCanvas = document.getElementById('connections');
+    if (!svgCanvas) return;
+
+    // empty SVG canvas before redrawing
+    svgCanvas.innerHTML = '';
+
+    connections.forEach(conn => {
+        const fromEl = document.getElementById(conn.from);
+        const toEl = document.getElementById(conn.to);
+
+        if (!fromEl || !toEl) return;
+
+        // get pastilles de connexion spécifiques dans le HTML
+        const outPoint = fromEl.querySelector('.connection-point.output');
+        const inPoint = toEl.querySelector('.connection-point.input');
+
+        if (!outPoint || !inPoint) return;
+
+        // pastilles de connexion (output et input) coordonnées
+        const workspaceRect = document.getElementById('workspace').getBoundingClientRect();
+        const outRect = outPoint.getBoundingClientRect();
+        const inRect = inPoint.getBoundingClientRect();
+
+        const x1 = (outRect.left + outRect.width / 2) - workspaceRect.left;
+        const y1 = (outRect.top + outRect.height / 2) - workspaceRect.top;
+        const x2 = (inRect.left + inRect.width / 2) - workspaceRect.left;
+        const y2 = (inRect.top + inRect.height / 2) - workspaceRect.top;
+
+        // create courbe de Bézier (Cubic Bézier Curve)
+        const controlOffset = Math.abs(x2 - x1) * 0.5;
+        const pathData = `M ${x1} ${y1} C ${x1 + controlOffset} ${y1}, ${x2 - controlOffset} ${y2}, ${x2} ${y2}`;
+
+        // SVG element and injection into DOM
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('class', 'connection-line');
+        
+        svgCanvas.appendChild(path);
+    });
 }
