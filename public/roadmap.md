@@ -9,10 +9,10 @@
 ## Étape 3 : l'Interactivité [x]
 – Rendre les blocs déplaçables (Drag & Drop)
 
-## Étape 4 : le panneau des propriétés 
+## Étape 4 : le panneau des propriétés [x]
 – Modifier les données d'un bloc en direct
 
-## Étape 5 : le système de Liens 
+## Étape 5 : le système de liens 
 – Connecter les blocs avec des lignes SVG
 
 ## Étape 6 : l'exécution et sauvegarde 

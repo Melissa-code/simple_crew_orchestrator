@@ -90,12 +90,15 @@ function addBlockToWorkspace(block) {
     const blockElement = Object.assign(document.createElement('div'), { 
         className: `block ${type}-block`, 
         id, 
-        innerHTML: 
-            `<div class="block-header">
+        innerHTML: `
+            <div class="block-header">
                 <span>${title}</span>
                 <button onclick="deleteBlock('${id}')" style="background:none; border:none; color:white; cursor:pointer;">✕</button>
             </div>
-            `
+            <div class="block-content">
+                <small></small>
+            </div>
+        `
     });
 
     // set position and add to workspace
@@ -177,8 +180,138 @@ function deleteBlock(blockId) {
     console.log(`Bloc supprimé avec succès ! ID: ${blockId}`);
 }
 
+/**
+ * Sélectionne bloc et déclenche l'affichage de ses propriétés
+ * @param {int} blockId 
+ */
 function selectBlock(blockId) {
     document.querySelectorAll('.block').forEach(block => block.classList.remove('selected'));
     document.getElementById(blockId).classList.add('selected');
     console.log(`Bloc sélectionné ! ID: ${blockId}`);
+
+    // display properties in the right panel
+    showProperties(blockId);
+}
+
+/**
+ * Génère et injecte formulaire HTML dans la sidebar selon le type de bloc
+ * @param {string} blockId - ID du bloc à afficher
+ */
+function showProperties(blockId) {
+    const block = blocks.find(b => b.id === blockId);
+    const propertiesPanel = document.getElementById('properties');
+    if (!block && !propertiesPanel) return;
+
+    // 1- Agent properties 
+    if (block.type === 'agent') {
+        propertiesPanel.innerHTML = `
+            <h3>Propriétés de l'Agent</h3>
+             <div class="form-group">
+                <label>Nom:</label>
+                <input type="text" class="form-control" value="${block.data.name}" onchange="updateProperty('${blockId}', 'name', this.value)">
+            </div>
+            <div class="form-group">
+                <label>Outils:</label>
+                <select class="form-control" onchange="updateProperty('${blockId}', 'tools', [this.value])">
+                    ${Object.keys(toolConfigs).map(tool => `<option value="${tool}" ${block.data.tools.includes(tool) ? 'selected' : ''}>${tool}</option>`).join('')}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Prompt:</label>
+                <textarea class="form-control" rows="4" onchange="updateProperty('${blockId}', 'prompt', this.value)">${block.data.prompt}</textarea>
+            </div>
+        `;
+    // 2- Task properties
+    } else if (block.type === 'task') {
+        const toolName = block.data.toolName || 'lmStudio';
+        propertiesPanel.innerHTML = `
+            <h3>Propriétés de la Tâche</h3>
+            <div class="form-group">
+                <label>Outil (Tool) :</label>
+                <select class="form-control" onchange="updateTaskTool('${blockId}', this.value)">
+                    ${Object.keys(toolConfigs).map(tool => `
+                        <option value="${tool}" ${toolName === tool ? 'selected' : ''}>${tool}</option>
+                    `).join('')}
+                </select>
+            </div>
+            <div id="tool-parameters-zone">
+                ${getToolParameters(toolName, block.data)}
+            </div>
+        `;
+    }
+}
+
+/**
+* Génère le champ de saisie dynamique pour l'outil d'une tâche
+ * @param {string} toolName - Le nom de l'outil (ex: 'lmStudio')
+ * @param {Object} data - Les données actuelles du bloc tâche 
+ */
+function getToolParameters(toolName, data) {
+    const config = toolConfigs[toolName]; // fetch, weather, writeFile, lmStudio
+    if (!config) return '';
+    // value from data or default value if not set
+    const value = data[config.param] || config.default || '';
+    
+    //  HTML (textarea/input)
+    const inputType = config.type === 'textarea' ? 
+        `<textarea class="form-control" rows="4" placeholder="${config.placeholder}">${value}</textarea>` :
+        `<input type="text" class="form-control" value="${value}" placeholder="${config.placeholder}">`;
+    
+    // inject oninput event to update property in real-time
+    return `
+        <div class="form-group">
+            <label>${config.label}</label>
+            ${inputType.replace('>', ` oninput="updateProperty('${selectedBlock}', '${config.param}', this.value)">`)}
+        </div>
+    `;
+}
+
+/**
+ * Preview block content in the workspace (DOM) based on its type and data
+ * @param {*} blockId 
+ * @returns 
+ */
+function updateBlockPreview(blockId) {
+    const block = blocks.find(b => b.id === blockId);
+    if (!block) return;
+
+    const content = document.querySelector(`#${blockId} .block-content small`);
+    if (content) {
+        content.textContent = block.type === 'task' ? `Tool: ${block.data.toolName}` : '';
+    }
+}
+
+function updateProperty(blockId, property, value) {
+    const block = blocks.find(b => b.id === blockId);
+    if (!block) return;
+
+    // update property in block data
+    block.data[property] = value;
+    console.log(`Propriété mise à jour ! Bloc ID: ${blockId}, Propriété: ${property}, Nouvelle valeur: ${value}`);
+
+    if (property === 'name' && block.type === 'agent') {
+        // update block in workspace
+        document.querySelector(`#${blockId} .block-header span`).textContent = value;
+    }
+    updateBlockPreview(blockId); 
+}
+
+function updateTaskTool(blockId, newTool) {
+    const block = blocks.find(b => b.id === blockId);
+    if (!block) return; 
+
+    Object.keys(toolConfigs).forEach(tool => {
+       const config = toolConfigs[tool]; // fetch, weather, writeFile, lmStudio
+       delete block.data[config.param]; // remove old tool parameters
+    });
+
+    block.data.toolName = newTool; // update tool name
+
+    const config = toolConfigs[newTool];
+    if (config && config.default) {
+        block.data[config.param] = config.default; 
+    }
+
+    showProperties(blockId); // refresh properties panel
+    updateBlockPreview(blockId); // refresh block preview
 }
