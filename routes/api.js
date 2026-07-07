@@ -23,12 +23,17 @@ router.post('/execute', async (req, res) => {
     const { workflow } = req.body; 
 
     try {
+        // ex: agentData = { name: "Agent météo", tools: ["weather"], prompt: "..." }
         const agents = workflow.agents.map(agentData => {
-            return new Agent(agentData.name, agentData.tools, agentData.prompt);
+            // convertir les noms d'outils (strings) en vraies instances Tool via toolsMap
+            const agentTools = (agentData.tools || []) //liste de noms d'outils de cet agent (ex: ["weather"])
+                .map(toolName => toolsMap[toolName])//pour chaque element de la liste, donne nvlle liste
+                .filter(Boolean); // enlève les outils inconnus
+            return new Agent(agentData.name, agentTools, agentData.prompt);
         });
 
         const tasks = workflow.tasks.map(taskData => { 
-            return new Task(taskData.input, taskData.toolName); 
+            return new Task( taskData.toolName, taskData.input,); 
         });
 
         const crew = new Crew(agents);

@@ -218,7 +218,11 @@ source de données (URL) pour obtenir un vrai article d'actualité.
 
 ---
 
+## 8. Interface graphique 
 
+Lancer le server: `node webServer.js` => accessible sur `http://localhost:3001/`
+
+<img style="width: 800px;" src="./assets/img/interface_agent_task.png">
 
 
 

@@ -190,6 +190,7 @@ function deleteBlock(blockId) {
 function selectBlock(blockId) {
     document.querySelectorAll('.block').forEach(block => block.classList.remove('selected'));
     document.getElementById(blockId).classList.add('selected');
+    selectedBlock = blockId;
 
     // display properties in the right panel
     showProperties(blockId);
@@ -289,7 +290,6 @@ function updateProperty(blockId, property, value) {
 
     // update property in block data
     block.data[property] = value;
-    console.log(`Propriété mise à jour ! Bloc ID: ${blockId}, Propriété: ${property}, Nouvelle valeur: ${value}`);
 
     if (property === 'name' && block.type === 'agent') {
         // update block in workspace
@@ -425,4 +425,102 @@ function logToConsole(type, message) {
 function clearLogsToConsole() {
     const content = document.getElementById('consoleContent');
     content.innerHTML = `<div class="log-entry log-info"><span class="log-timestamp">[${new Date().toLocaleTimeString()}]</span>Console vidée</div>`;
+}
+
+/**
+ * lance l'exécution du workflow en validant les blocs, 
+ * en envoyant les données au serveur ,
+ * et en affichant les résultats dans la console
+ */
+async function executeWorkflow() {
+    if (blocks.length === 0) {
+        alert("Ajoutez des blocs avant de lancer l'exécution !");
+        return;
+    }
+
+    clearLogsToConsole();
+    logToConsole('info', 'Exécution du workflow en cours...');
+
+    //validation
+    for (const block of blocks.filter(b => b.type === 'task')) {
+        const validation = validateTaskParameters(block);
+        if (!validation.valid) {
+            logToConsole('error', `Bloc Tâche ID: ${block.id} - Erreur: ${validation.message}`);
+            return alert(`Erreur : ${validation.message}`);
+        }
+    }
+
+    logToConsole('info', `Validation réussie - ${blocks.filter(b => b.type === 'agent').length} agents, ${blocks.filter(b => b.type === 'task').length} tâches`);
+
+    const workflow = {
+        agents: blocks.filter(b => b.type === 'agent').map(b => b.data),
+        tasks: blocks.filter(b => b.type === 'task').map(b =>  formatTaskForExecution(b.data)),
+    }
+    document.getElementById('progressContainer').style.display = 'block';
+    document.querySelectorAll('.connection-point').forEach(dot => dot.classList.add('active')); 
+
+    try {
+        logToConsole('info', 'Envoi du workflow au serveur...');
+        const response = await fetch('/api/execute', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ workflow: workflow })
+        });
+
+        const result = await response.json();
+        
+        setTimeout(() => {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.querySelectorAll('.connection-point').forEach(dot => dot.classList.remove('active'));
+
+            if (result.success) {
+                logToConsole('success', 'Workflow exécuté avec succès !');
+                result.results.forEach((res, index) => {
+                    logToConsole('info', `Résultat de la tâche ${index + 1}: ${res}`);
+                });
+                alert('Workflow exécuté avec succès ! Consultez la console pour les résultats.');
+            } else {
+                logToConsole('error', `Erreur lors de l'exécution du workflow: ${result.message}`);
+                alert(`Erreur : ${result.message}`);
+            }
+        }, 2000); // simulate delay for progress bar
+    } catch (error) {
+        document.getElementById('progressContainer').style.display = 'none';
+        document.querySelectorAll('.connection-point').forEach(dot => dot.classList.remove('active'));
+        logToConsole('error', `Erreur réseau ou serveur: ${error.message}`);
+        alert(`Erreur réseau ou serveur : ${error.message}`);
+    }
+}
+
+function validateTaskParameters(taskBlock) {
+    const toolName = taskBlock.data.toolName;
+    const config = toolConfigs[toolName];
+    if (!config) return { valid: false, message: `Outil inconnu: ${toolName}` };
+
+    if (['fetch', 'weather', 'writeFile'].includes(toolName)) {
+        const value = taskBlock.data[config.param];
+        if (!value || !value.trim()) {
+            return { valid: false, message: `${config.label.slice(0, -1)} requis pour ${toolName}` };
+        }
+    }
+    
+    return { valid: true };
+}
+
+/**
+ * formatte les données d'une tâche pour l'exécution côté serveur
+ * @param {*} taskData 
+ * @returns 
+ */
+function formatTaskForExecution(taskData) {
+    const { toolName } = taskData;
+    // mapping des inputs selon l'outil
+    const inputs = {
+        fetch: taskData.url,
+        weather: taskData.city,
+        writeFile: { filename: taskData.filename, content: '' },
+        lmStudio: taskData.input || '',
+    };
+
+    return { input: inputs[toolName] || inputs.lmStudio, toolName };
 }

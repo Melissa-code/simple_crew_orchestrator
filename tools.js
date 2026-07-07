@@ -11,7 +11,6 @@ const TRANSLATE_API_KEY = process.env.TRANSLATE_API_KEY;
 
 if (!LM_API_URL || !LM_MODEL) {
     throw new Error("LM_API_URL et LM_MODEL doivent être définis dans le fichier .env");
-    process.exit(1);
 }   
 
 /**
