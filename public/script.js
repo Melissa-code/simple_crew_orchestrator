@@ -510,7 +510,7 @@ function validateTaskParameters(taskBlock) {
 /**
  * formatte les données d'une tâche pour l'exécution côté serveur
  * @param {*} taskData 
- * @returns 
+ * @returns
  */
 function formatTaskForExecution(taskData) {
     const { toolName } = taskData;
@@ -523,4 +523,27 @@ function formatTaskForExecution(taskData) {
     };
 
     return { input: inputs[toolName] || inputs.lmStudio, toolName };
+}
+
+/**
+ * sauvegarde le workflow en JSON localement dans Téléchargements
+ */
+function saveWorkflow() {
+    const workflow= {
+        blocks: blocks,
+        connections: connections,
+        timestamp: new Date().toISOString()
+    }
+
+    const blob = new Blob([JSON.stringify(workflow, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `workflow_${new Date().toISOString().slice(0, 10)}.json`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+
+    logToConsole('info', 'Workflow sauvegardé localement en JSON.');
 }

@@ -225,5 +225,10 @@ Lancer le server: `node webServer.js` => accessible sur `http://localhost:3001/`
 <img style="width: 800px;" src="./assets/img/interface_agent_task.png">
 
 
+### Sauvegarde des workflows 
 
+L'application permet d'exporter la structure complète d'un canvas via un fichier JSON.
 
+#### 1. Sauvegarder  (`saveWorkflow()`)
+* **Fonctionnement:** exporte l'état actuel des blocs (positions, configurations) et des connexions sous forme de fichier JSON
+* **Résultat :** télécharge automatiquement un fichier `workflow_YYYY-MM-DD.json` dans le dossier téléchargements de l'ordinateur
