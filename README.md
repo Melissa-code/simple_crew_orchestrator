@@ -233,6 +233,19 @@ L'application permet d'exporter et d'importer la structure complète d'un canvas
 * **Fonctionnement:** exporte l'état actuel des blocs (positions, configurations) et des connexions sous forme de fichier JSON
 * **Résultat :** télécharge automatiquement un fichier `workflow_YYYY-MM-DD.json` dans le dossier téléchargements de l'ordinateur
 
-### 2. Charger (`loadWorkflow()`)
+#### 2. Charger (`loadWorkflow()`)
 * **Fonctionnement :** lit un fichier JSON de workflow local via l'API `FileReader`
 * **Résultat :** réinitialise le canvas et redessine automatiquement tous les blocs et les lignes de connexion SVG à l'identique
+
+<img style="width: 800px;" src="./assets/img/export_load_workflow.png">
+
+
+### Guide d'utilisation intégré
+
+* **Panneau d'aide dynamique :** chargement asynchrone (`fetch`) de la documentation 
+utilisateur rédigée au format Markdown (`help.md`)
+* **Rendu HTML :** conversion dynamique du Markdown en HTML via la bibliothèque `marked.js` (lien CDN)
+* **Optimisation (Lazy Loading) :** le guide n'est récupéré sur le serveur qu'au premier clic sur le bouton d'aide
+
+<img style="width: 800px;" src="./assets/img/help.png">
+

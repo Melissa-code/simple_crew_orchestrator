@@ -5,6 +5,7 @@ let connecting = false;
 let connectStartBlock = null;
 let blocks = []; //blocks with data
 let consoleExpanded = false; 
+let helpVisible = false;
 
 /* replace data by default */
 const blockTemplates = {
@@ -172,7 +173,6 @@ function makeDraggable(element, block) {
         Object.assign(element.style, { left: `${block.x}px`, top: `${block.y}px` });
         Object.assign(document.body.style, { userSelect: '', cursor: '' });
 
-        // update connections
         updateConnections();
     });
 }
@@ -590,4 +590,28 @@ function loadWorkflow() {
     };
 
     input.click(); // open file dialog
+}
+
+async function toggleHelp() {
+    const panel = document.getElementById('helpPanel');
+    const content = document.getElementById('helpContent');
+    if (!panel || !content) return;
+
+    if (!helpVisible) {
+        panel.classList.add('visible');
+        helpVisible = true;
+
+        if (content.innerHTML.includes('Chargement')) {
+            try {
+                const response = await fetch('help.md');
+                const markdown = await response.text();
+                content.innerHTML = marked.parse(markdown);
+            } catch (error) {
+                logToConsole('error', `Erreur lors du chargement de l'aide: ${error.message}`);
+            }
+        }
+    } else {
+        panel.classList.remove('visible');
+        helpVisible = false;
+    }
 }
