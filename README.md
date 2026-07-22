@@ -227,8 +227,12 @@ Lancer le server: `node webServer.js` => accessible sur `http://localhost:3001/`
 
 ### Sauvegarde des workflows 
 
-L'application permet d'exporter la structure complète d'un canvas via un fichier JSON.
+L'application permet d'exporter et d'importer la structure complète d'un canvas via un fichier JSON.
 
 #### 1. Sauvegarder  (`saveWorkflow()`)
 * **Fonctionnement:** exporte l'état actuel des blocs (positions, configurations) et des connexions sous forme de fichier JSON
 * **Résultat :** télécharge automatiquement un fichier `workflow_YYYY-MM-DD.json` dans le dossier téléchargements de l'ordinateur
+
+### 2. Charger (`loadWorkflow()`)
+* **Fonctionnement :** lit un fichier JSON de workflow local via l'API `FileReader`
+* **Résultat :** réinitialise le canvas et redessine automatiquement tous les blocs et les lignes de connexion SVG à l'identique
