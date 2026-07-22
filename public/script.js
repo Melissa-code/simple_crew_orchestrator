@@ -547,3 +547,47 @@ function saveWorkflow() {
 
     logToConsole('info', 'Workflow sauvegardé localement en JSON.');
 }
+
+/**
+ * charge un workflow depuis un fichier JSON local 
+ * et le reconstruit dans le workspace 
+ */
+function loadWorkflow() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+
+    input.onchange = (e) => {
+        const file = e.target.files[0]; // get the selected file
+        if (!file) return;
+
+        const reader = new FileReader(); // read the file as text
+        reader.onload = (event) => {
+            try {
+                const workflow = JSON.parse(event.target.result);
+                clearCanvas(); // clear current workspace
+
+                blocks = workflow.blocks || [];
+                connections = workflow.connections || [];
+
+                const maxID = blocks.reduce((max, block) => {
+                    const idNum = parseInt(block.id.split('_')[1]);
+                    return Math.max(max, idNum);
+                }, 0);
+                blockCounter = maxID + 1; // update blockCounter to avoid ID conflicts
+
+                // reconstruction dans le DOM 
+                blocks.forEach(block => addBlockToWorkspace(block));
+                updateConnections(); // redraw connections
+                logToConsole('info', 'Workflow chargé avec succès depuis le fichier JSON.');
+            } catch (error) {
+                logToConsole('error', `Erreur lors du chargement : ${error.message}`);
+                alert(`Erreur lors du chargement du workflow: ${error.message}`);
+            }
+        };
+
+        reader.readAsText(file); // trigger file reading
+    };
+
+    input.click(); // open file dialog
+}
