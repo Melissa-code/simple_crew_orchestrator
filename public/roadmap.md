@@ -15,5 +15,5 @@
 ## Étape 5 : le système de liens [x]
 - Connecter les blocs avec des lignes SVG
 
-## Étape 6 : l'exécution et sauvegarde 
+## Étape 6 : l'exécution et sauvegarde [x]
 - Envoyer au serveur et gérer le JSON

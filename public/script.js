@@ -31,7 +31,7 @@ const toolConfigs = {
         placeholder: 'Paris', 
         label: 'Ville:' 
     },
-    writeFile: { 
+    fileWrite: { 
         param: 'filename', 
         placeholder: 'output.txt', 
         label: 'Nom du fichier:', 
@@ -94,7 +94,7 @@ function addBlockToWorkspace(block) {
         innerHTML: `
             <div class="block-header">
                 <span>${title}</span>
-                <button onclick="deleteBlock('${id}')" style="background:none; border:none; color:white; cursor:pointer;">✕</button>
+                <button onclick="deleteBlock('${id}'); event.stopPropagation();" style="background:none; border:none; color:white; cursor:pointer;">✕</button>
             </div>
             <div class="block-content">
                 <small></small>
@@ -189,7 +189,10 @@ function deleteBlock(blockId) {
  */
 function selectBlock(blockId) {
     document.querySelectorAll('.block').forEach(block => block.classList.remove('selected'));
-    document.getElementById(blockId).classList.add('selected');
+    // document.getElementById(blockId).classList.add('selected');
+    const block = document.getElementById(blockId);
+    if (!block) return; // le bloc a pu être supprimé entre-temps
+    block.classList.add('selected');
     selectedBlock = blockId;
 
     // display properties in the right panel
@@ -250,7 +253,7 @@ function showProperties(blockId) {
  * @param {Object} data - Les données actuelles du bloc tâche 
  */
 function getToolParameters(toolName, data) {
-    const config = toolConfigs[toolName]; // fetch, weather, writeFile, lmStudio
+    const config = toolConfigs[toolName]; // fetch, weather, fileWrite, lmStudio
     if (!config) return '';
     // value from data or default value if not set
     const value = data[config.param] || config.default || '';
@@ -303,7 +306,7 @@ function updateTaskTool(blockId, newTool) {
     if (!block) return; 
 
     Object.keys(toolConfigs).forEach(tool => {
-       const config = toolConfigs[tool]; // fetch, weather, writeFile, lmStudio
+       const config = toolConfigs[tool]; // fetch, weather, fileWrite, lmStudio
        delete block.data[config.param]; // remove old tool parameters
     });
 
@@ -480,8 +483,11 @@ async function executeWorkflow() {
                 });
                 alert('Workflow exécuté avec succès ! Consultez la console pour les résultats.');
             } else {
-                logToConsole('error', `Erreur lors de l'exécution du workflow: ${result.message}`);
-                alert(`Erreur : ${result.message}`);
+                // logToConsole('error', `Erreur lors de l'exécution du workflow: ${result.message}`);
+                // alert(`Erreur : ${result.message}`);
+                const errMsg = result.details || result.message || 'Erreur inconnue';
+                logToConsole('error', `Erreur lors de l'exécution du workflow: ${errMsg}`);
+                alert(`Erreur : ${errMsg}`);
             }
         }, 2000); // simulate delay for progress bar
     } catch (error) {
@@ -497,7 +503,7 @@ function validateTaskParameters(taskBlock) {
     const config = toolConfigs[toolName];
     if (!config) return { valid: false, message: `Outil inconnu: ${toolName}` };
 
-    if (['fetch', 'weather', 'writeFile'].includes(toolName)) {
+    if (['fetch', 'weather', 'fileWrite'].includes(toolName)) {
         const value = taskBlock.data[config.param];
         if (!value || !value.trim()) {
             return { valid: false, message: `${config.label.slice(0, -1)} requis pour ${toolName}` };
@@ -518,7 +524,7 @@ function formatTaskForExecution(taskData) {
     const inputs = {
         fetch: taskData.url,
         weather: taskData.city,
-        writeFile: { filename: taskData.filename, content: '' },
+        fileWrite: { fileName: taskData.filename, content: '' }, // const fileWriteTool = new Tool('fileWrite', async ({ fileName, content }) => {
         lmStudio: taskData.input || '',
     };
 
