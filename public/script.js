@@ -30,7 +30,7 @@ const toolConfigs = {
         param: 'city', 
         placeholder: 'Paris', 
         label: 'Ville:' 
-    },
+    },  
     fileWrite: { 
         param: 'filename', 
         placeholder: 'output.txt', 

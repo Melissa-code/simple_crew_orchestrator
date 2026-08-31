@@ -1,4 +1,4 @@
-# Simple Crew Orchestrator
+# <img src="./public/img/agent_ia_grey.svg" width="25">&nbsp; Simple Crew Orchestrator
 
 Ce projet est un framework léger codé en Node.js en vue d'orchestrer des agents IA autonomes capables d'utiliser des outils réels comme des APIs ou la gestion de système de fichiers et d'automatiser des tâches.
 
@@ -139,37 +139,37 @@ Nul besoin de copier une clé API, ajouter son email dans l'URL de la requête a
 Ce cas d'usage démontre la capacité d'orchestration entre un agent spécialisé 
 en outils (Tools) et un agent spécialisé en analyse (LLM)
 
-**Fonctionnement de l'équipe**
+#### 7.1.1. Fonctionnement de l'équipe
 
-1. WeatherFetcher (Agent 1) : interroge l'API météo et extrait les données comme température, humidité, conditions
+**1. WeatherFetcher (Agent 1):** interroge l'API météo et extrait les données comme température, humidité, conditions
 
-2. WeatherAnalyst (Agent 2) : récupère le résultat du premier agent pour rédiger une analyse contextuelle et des conseils pratiques via LM Studio
+**2. WeatherAnalyst (Agent 2):** récupère le résultat du premier agent pour rédiger une analyse contextuelle et des conseils pratiques via LM Studio
 
-**Configuration requise**
+#### 7.1.2. Configuration requise
 
 - source de données : [WeatherAPI](https://www.weatherapi.com/)
 - variables d'environnement (.env) `WEATHER_API_KEY=****** : Clé secrète pour l'accès aux données météo` (Créer un compte gratuit)
 
-#### L'Outil : weatherTool
+#### 7.1.3. L'Outil : weatherTool
 
 L'outil est défini comme une instance de la classe Tool. 
 Il agit comme une interface entre le code et l'API externe.
 
-- Fonction : effectue une requête HTTP fetch vers WeatherAPI
-- Formatage : ne renvoie pas tout le JSON brut (trop lourd pour l'IA), mais une chaîne de caractères optimisée (nom, température, conditions, humidité)
-- Sécurité : utilise WEATHER_API_KEY stockée dans le .env
+- fonction : effectue une requête HTTP fetch vers WeatherAPI
+- formatage : ne renvoie pas tout le JSON brut (trop lourd pour l'IA), mais une chaîne de caractères optimisée (nom, température, conditions, humidité)
+- sécurité : utilise WEATHER_API_KEY stockée dans le .env
 
-#### L'Équipage : weatherCrew
+#### 7.1.4. L'Équipe : weatherCrew
 
-Le fichier example/weatherCrew.js définit la logique de collaboration :
+Le fichier `example/weatherCrew.js` définit la logique de collaboration :
 
-- WeatherFetcher : agent équipé du weatherTool. Sa mission est de transformer une ville (input) en données techniques
+**- WeatherFetcher** : agent équipé du weatherTool. Sa mission est de transformer une ville (input) en données techniques
 
-- WeatherAnalyst : agent utilisant LM Studio. Il ne possède pas d'outil mais reçoit les données du premier agent pour rédiger des conseils
+**- WeatherAnalyst** : agent utilisant LM Studio. Il ne possède pas d'outil mais reçoit les données du premier agent pour rédiger des conseils
 
-#### Flux de données (Data Pipeline)
+#### Flux de données (data pipeline)
 
-L'orchestration est gérée par la classe Crew qui assure le transfert du lastResult :
+L'orchestration est gérée par la classe `Crew` qui assure le transfert du lastResult :
 `Outil Météo ➔ Données Brutes ➔ Input Agent IA ➔ Conseils Finalisés`
 
 => **Lancement** à la racine `node example/weatherCrew.js`
@@ -181,10 +181,10 @@ L'orchestration est gérée par la classe Crew qui assure le transfert du lastRe
 
 ### 7.2. Recherche web et écriture dans un fichier (`MyCrewdemo.js`)
 
-Equipe de 5 agents collabore pour automatiser une veille économique complète: 
+Une équipe de 5 agents collabore pour automatiser une veille économique complète: 
 du scraping internet jusqu'à la création d'un fichier markdown. 
 
-#### Fonctionnement de l'équipe 
+#### 7.2.1. Fonctionnement de l'équipe 
 
 1. **Fetcher** (outil: `fetch`) scrape contenu brut de la page web à partir d'un mot-clé,
 2. **Analyst** (outil: `lmStudio`) analyse ce contenu brut pour en faire un résumé,
@@ -192,17 +192,19 @@ du scraping internet jusqu'à la création d'un fichier markdown.
 4. **Writer** (outil: `lmStudio`) rédige un article de blog optimisé SEO en Markdown, 
 5. **Injector** (outil: `fileWrite`) enregistre le texte final dans un fichier local `result.md`.
 
-#### Pipeline de données 
+#### 7.2.2. Pipeline de données 
 
 `Web Scraping ➔ Résumé ➔ Faits Clés ➔ Article Markdown ➔ Fichier result.md`
 
-#### Pour exécuter ce cas d'usage run `node ./MyCrewdemo.js`
+#### 7.2.3. Pour exécuter
 
-#### Limite du test : Ce n'est pas le résultat attendu 
+`node ./MyCrewdemo.js`
+
+#### 7.2.4. Limite du test : ce n'est pas le résultat attendu 
 
 Bien que la chaîne technique fonctionne parfaitement sans aucun crash: le fichier `result.md` se génère bien,
 **le contenu de l'article n'est pas celui recherché au départ**. 
-Au lieu d'avoir un article chaud avec les derniers chiffres économiques de 2026,
+Au lieu d'avoir un article avec les derniers chiffres économiques de 2026,
 l'IA a généré un texte de conseils généraux sur l'économie.
 
 **Pourquoi ce décalage ?**
